@@ -19,13 +19,13 @@ const routingTable = {
       url: '../htdocs/index.html',
       type: 'text/html'
     },
-  '/assets/css/styles.css': {
+  '/styles.css': {
       url: '../htdocs/assets/css/styles.css', 
       type: 'text/css'
     },
-  '/assets/png/SokobanClone_byVellidragon.png': {
+  '/SokobanClone_byVellidragon.png': {
       url: '../htdocs/assets/png/SokobanClone_byVellidragon.png',
-      type: 'text/css'
+      type: 'image/png'
     },
 };
 
