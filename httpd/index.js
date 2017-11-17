@@ -3,7 +3,7 @@
  *  @brief      The entry function of the httpd.
  *  @author     Yiwei Chiao (ywchiao@gmail.com)
  *  @date       10/03/2017 created.
- *  @date       11/10/2017 last modified.
+ *  @date       11/17/2017 last modified.
  *  @version    0.1.0
  *  @copyright  MIT, (C) 2017 Yiwei Chiao
  *  @details
@@ -14,20 +14,7 @@
 
 let http = require('http');
 
-const routingTable = {
-  '/': {
-      url: '../htdocs/index.html',
-      type: 'text/html'
-    },
-  '/styles.css': {
-      url: '../htdocs/assets/css/styles.css', 
-      type: 'text/css'
-    },
-  '/SokobanClone_byVellidragon.png': {
-      url: '../htdocs/assets/png/SokobanClone_byVellidragon.png',
-      type: 'image/png'
-    },
-};
+const routingTable = require('./config.json');
 
 /**
   * 利用 http.ServerResponse 物件回傳檔案內容
