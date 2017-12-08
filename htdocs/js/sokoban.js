@@ -23,7 +23,7 @@ window.addEventListener('load', () => {
   console.log("Sokoban.js loaded");
 
   let gameTitle = document.createElement('span');
-  gameTitle.textContent = 'Soboban';
+  gameTitle.textContent = 'Sokoban';
 
   let gameHeader = document.createElement('header');
   gameHeader.className = 'card_header';
