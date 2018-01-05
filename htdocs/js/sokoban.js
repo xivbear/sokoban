@@ -519,27 +519,22 @@ let sokoban = {
         this.brush.save();
         this.brush.translate(32*x, 32*y);
 
-        Object.values(SOKOBAN).some(value => {
-          if (value == this.level[y].charAt(x)) {
-            switch (value) {
-              case SOKOBAN.MAN:
-                this.tiling[SOKOBAN.FLOOR]();
+        let value = this.level[y].charAt(x);
 
-                break;
+        switch (value) {
+          case SOKOBAN.MAN:
+            this.tiling[SOKOBAN.FLOOR]();
 
-              case SOKOBAN.MAN_ON_GOAL:
-                this.tiling[SOKOBAN.GOAL]();
-                value = SOKOBAN.MAN;
+            break;
 
-                break;
-            };
-
-            this.tiling[value]();
-
-            return true;
+          case SOKOBAN.MAN_ON_GOAL:
+            this.tiling[SOKOBAN.GOAL]();
             value = SOKOBAN.MAN;
-          };
-        });
+
+            break;
+        };
+
+        this.tiling[value]();
 
         this.brush.restore();
       };
