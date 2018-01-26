@@ -471,6 +471,91 @@ let drawBoardGrid = (ctx) => {
 };
 
 /**
+ * 製造 *大雪紛飛* 的特效物件。
+ *
+ * @param 'ctx' : 繪圖 context 物件
+ * @returns {undefined}
+ */
+let snowfall = {
+  // *雪花* 陣列
+  flake: [],
+
+  /**
+   * 增加 *一片* 新雪花。
+   *
+   * @returns {undefined}
+   */
+  add: function () {
+    this.flake = this.flake || [];
+
+    this.flake.push({
+      x: Math.floor(Math.random() * 32 * 12),
+      y: Math.floor(Math.random() * 11) - 2
+    });
+  },
+
+  /**
+   * *隨機* 讓雪花左右飄動或落下。
+   *
+   * @param 'ctx' : 繪圖 context 物件
+   * @returns {undefined}
+   */
+  falling: function (tick) {
+    this.flake = this.flake || [];
+
+    if (this.flake.length < 500) {
+      this.add();
+    } // fi
+
+    this.flake.forEach(flake => {
+      flake.x += (Math.floor(Math.random() * 11) - 5); // -5 .. +5
+      flake.y += (Math.floor(Math.random() * 11) - 2); // -2 .. +8
+
+      if (flake.y > 32 * 12) {
+        flake.x = Math.floor(Math.random() * 32 * 12);
+        flake.y = (Math.floor(Math.random() * 11) - 2); // -2 .. +8
+      }
+    });
+  },
+
+  /**
+   * 繪出一片 *雪花* (flake)
+   *
+   * @param 'ctx' : 繪圖 context 物件
+   * @returns {undefined}
+   */
+  paint: function (ctx) {
+    // 準備一支畫筆
+    ctx.fillStyle = '#fffef0';
+
+    this.flake.forEach(flake => {
+      ctx.beginPath();
+
+      ctx.moveTo( flake.x + 10, flake.y);
+      ctx.lineTo( flake.x + 20, flake.y + 10);
+      ctx.lineTo( flake.x + 10, flake.y + 20);
+      ctx.lineTo( flake.x, flake.y + 10);
+      ctx.lineTo( flake.x + 10, flake.y);
+
+      ctx.closePath();
+
+      // 繪出雪花
+      ctx.fill();       
+    });
+  },
+
+  /**
+   * 勝利時的 *雪花* (snowing) 效果。
+   *
+   * @returns {undefined}
+   */
+  loop: function (canvas) {
+    this.falling();
+    this.paint(canvas.brush);
+  },
+};
+
+/**
  * Sokoban 遊戲物件
  */
 let sokoban = {
@@ -542,12 +627,62 @@ let sokoban = {
   },
 
   /**
+   * 過關，播放過關特效。
+   *
+   * @returns {undefined}
+   */
+  u_win: function (tick) {
+    this.paint();
+    this.effect.loop(this);
+
+    this.winning = requestAnimationFrame(this.u_win.bind(this));
+  },
+
+  /**
+   * 檢查遊戲是否過關。
+   *
+   * @returns {undefined}
+   */
+  goodGame: function () {
+    return this.goal.every(cell => {
+      return this.isBoxOnGoal(cell);
+    });
+  },
+
+  /**
+   * 將關卡的 *目標* 點座標收集起來，放到 goal[] 裡。
+   *
+   * @returns {undefined}
+   */
+  gatherGoal: function () {
+    this.goal = [];
+
+    this.level.forEach((row, y)=> {
+      row.split('').forEach((ch, x) => {
+        if (ch == SOKOBAN.GOAL) {
+          this.goal.push({x, y});
+        }
+      });
+    });
+  },
+
+  /**
    * 依傳入的遊戲關卡編號，初始遊戲
    *
    * @returns {undefined}
    */
   start: function (level) {
+    if (level == 2) {
+      this.winning = requestAnimationFrame(this.u_win.bind(this));
+
+      return;
+    }
+    else {
+      cancelAnimationFrame(this.winning);
+    }
+
     this.level = JSON.parse(JSON.stringify(levels[level]));
+    this.gatherGoal();
     this.paint();
   },
 
@@ -563,6 +698,11 @@ let sokoban = {
    */
   update: function (e) {
     this.move(e);
+
+    if (this.goodGame()) {
+      this.winning = requestAnimationFrame(this.u_win.bind(this));
+    } // fi
+
     this.paint();
   },
 };
@@ -622,6 +762,7 @@ let newGame = (ctx, tileset) => {
     );
   });
 
+  game.effect = snowfall;
   game.brush = ctx;
   game.tiling[SOKOBAN.MAN] = game.tiling[SOKOBAN.UP];
 
